@@ -77,14 +77,19 @@ def get_file_name_from_url(url: str, base_url:str)-> str:
 
     return file_name
 
-def crawl_all_urls_and_save_to_md(start_url: str, base_url: str, data_dir: str):
+def crawl_all_urls_and_save_to_md(start_url: str, base_url: str, data_dir: str, max_pages: int = None):
     visited_urls = set()
     urls_to_visit = deque([start_url])
+    pages_visited_count = 0
 
     with sync_playwright() as p:
         browser = p.chromium.launch()
 
         while urls_to_visit:
+            if max_pages is not None and pages_visited_count >= max_pages:
+                print(f"Max pages ({max_pages}) reached. Stopping crawl.")
+                break
+
             current_url = urls_to_visit.popleft()
 
             if current_url in visited_urls:
@@ -92,6 +97,7 @@ def crawl_all_urls_and_save_to_md(start_url: str, base_url: str, data_dir: str):
 
             print(f"Visiting: {current_url}")
             visited_urls.add(current_url)
+            pages_visited_count += 1
 
             try:
                 html_body = visit_url_using_browser(current_url, browser)
@@ -128,10 +134,11 @@ def main():
     parser.add_argument("start_url", help="The starting URL for the crawl.")
     parser.add_argument("base_url", help="The base URL to filter links.")
     parser.add_argument("output_file_path", help="The path to the output markdown file.")
+    parser.add_argument("--max-pages", type=int, help="Maximum number of pages to visit.")
     args = parser.parse_args()
 
-    data_directory = "data"
-    crawl_all_urls_and_save_to_md(args.start_url, args.base_url, data_directory)
+    data_directory = os.path.dirname(args.output_file_path) or "data" # Use directory of output file or 'data'
+    crawl_all_urls_and_save_to_md(args.start_url, args.base_url, data_directory, args.max_pages)
     create_a_singe_md(data_directory, args.output_file_path)
 
 
