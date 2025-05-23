@@ -8,3 +8,22 @@ wheels/
 
 # Virtual environments
 .venv
+
+# Data director
+data/
+
+# Environment files
+.env
+.aider.conf.yml
+.aider*
+
+# Temp files
+tmp/
+
+# Output files
+output/
+*.db
+*.txt
+
+# OS files
+.DS_Store
