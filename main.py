@@ -137,7 +137,7 @@ def main():
     parser.add_argument("--max-pages", type=int, help="Maximum number of pages to visit.")
     args = parser.parse_args()
 
-    data_directory = os.path.dirname(args.output_file_path) or "data" # Use directory of output file or 'data'
+    data_directory = "data"
     crawl_all_urls_and_save_to_md(args.start_url, args.base_url, data_directory, args.max_pages)
     create_a_singe_md(data_directory, args.output_file_path)
 
